@@ -115,21 +115,34 @@ def main():
     parser.add_argument("--want", type=str,
                         help="""name of a game you want. E.g.:
                         --want \"example\"""")
+    parser.add_argument("--list", type=str,
+                        help="path to your games list")
     args = parser.parse_args()
 
-    print("Paste your games list and press Ctrl+D.")
-    # stdin is required to accept multiline lists.
-    games_text = sys.stdin.readlines()
-    print("Finding trades...")
+    games_text = []
 
-    # games_text = raw_input("Paste your games' list here.\n")
-    # games_list = games_text.split("\n")
+    if args.list is not None:
+        with open(args.list, "r") as file:
+            print(" > Reading your games list.")
+            games_text = file.readlines()
 
-    games_list = [game.strip("\n") for game in games_text]
+    else:
+        print(" > Paste your games list and press Ctrl+D.")
+        # stdin is required to accept multiline lists.
+        games_text = sys.stdin.readlines()
 
-    link_array = find_trades(games_list, args.want)
+    if len(games_text) > 0:
+        print(" > Finding trades...")
 
-    evaluate_trades(link_array, games_list)
+        games_list = [game.strip("\n") for game in games_text]
+
+        link_array = find_trades(games_list, args.want)
+
+        evaluate_trades(link_array, games_list)
+
+    else:
+        print(" > You haven't provided any games list.")
+        exit()
 
 
 if __name__ == "__main__":
